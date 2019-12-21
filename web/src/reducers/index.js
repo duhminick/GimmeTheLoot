@@ -1,4 +1,4 @@
 import { combineReducers } from 'redux';
-import navigationbar from './navigationbar';
+import monitor from './monitor';
 
-export const rootReducer = combineReducers({navigationbar});
+export const rootReducer = combineReducers({ monitor });

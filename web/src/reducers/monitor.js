@@ -1,4 +1,4 @@
-import { ADD_MONITOR_VISIBILITY, MonitorVisibility } from '../actions/navigationbar';
+import { ADD_MONITOR_VISIBILITY, MonitorVisibility } from '../actions/monitor';
 
 const initialState = {
   addMonitorVisbility: MonitorVisibility.HIDE

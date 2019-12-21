@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Navbar, Nav, Button } from 'react-bootstrap';
-import { addMonitorVisibility, MonitorVisibility } from '../../actions/navigationbar';
+import { addMonitorVisibility, MonitorVisibility } from '../../actions/monitor';
 import './navigationbar.css';
 
 class NavigationBar extends Component {
