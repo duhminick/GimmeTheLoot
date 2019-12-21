@@ -1,4 +1,4 @@
-import { GraphQLServer } from 'graphql-yoga';
+import { GraphQLServer, PubSub } from 'graphql-yoga';
 import mongoose from 'mongoose';
 import { models } from './models';
 import { Resolvers } from './graphql';
@@ -8,9 +8,12 @@ const db = mongoose.connect('mongodb://mongodb/gimmetheloot', {
   useUnifiedTopology: true
 });
 
+const pubsub = new PubSub();
+
 const context = {
   models,
-  db
+  db,
+  pubsub
 };
 
 const server = new GraphQLServer({

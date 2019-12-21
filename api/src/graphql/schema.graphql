@@ -1,14 +1,24 @@
+scalar Date
+
 type Query {
   items: [Item!]!
+  item(id: ID!): Item!
 }
 
 type Mutation {
-  createItem(name: String!, url: String!, price: Float): Boolean!
+  createItem(name: String!, url: String!, price: Float, source: String): Boolean!
+  deleteItem(id: ID!): Boolean!
+}
+
+type Subscription {
+  itemAdded: Item!
 }
 
 type Item {
-  id: String!
+  id: ID!
   name: String!
   url: String!
   price: Float
+  source: String
+  date: Date!
 }
