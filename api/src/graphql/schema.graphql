@@ -3,11 +3,16 @@ scalar Date
 type Query {
   items: [Item!]!
   item(id: ID!): Item!
+
+  monitors: [Monitor!]!
 }
 
 type Mutation {
   createItem(name: String!, url: String!, price: Float, source: String): Boolean!
   deleteItem(id: ID!): Boolean!
+  
+  createMonitor(name: String!, type: String!, keywords: [String]!, url: String): Boolean!
+  deleteMonitor(id: ID!): Boolean!
 }
 
 type Subscription {
@@ -21,4 +26,12 @@ type Item {
   price: Float
   source: String
   date: Date!
+}
+
+type Monitor {
+  id: ID!
+  name: String!
+  type: String!
+  keywords: [String]!
+  url: String
 }

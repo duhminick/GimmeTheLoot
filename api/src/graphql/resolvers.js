@@ -5,10 +5,10 @@ const ITEM_ADDED = 'itemAdded';
 export default {
   Query: {
     items: async (parent, args, { models }) => {
-      const items = await models.Item.find({});
+      const items = await models.Item.find({}).sort('-date');
       return items;
     },
-    item: async (parent, { id } , { models }) => {
+    item: async (parent, { id }, { models }) => {
       const item = await models.Item.findOne({ _id: id });
 
       if (!item) {
@@ -16,6 +16,10 @@ export default {
       }
 
       return item;
+    },
+    monitors: async (parent, args, { models }) => {
+      const monitors = await models.Monitor.find({});
+      return monitors;
     }
   },
   Mutation: {
@@ -49,6 +53,29 @@ export default {
       item.deleteOne();
 
       return true;
+    },
+    createMonitor: async (parent, { name, type, keywords, url }, { models }) => {
+      const newItem = models.Monitor({
+        name,
+        type,
+        keywords,
+        url
+      });
+
+      await newItem.save();
+
+      return true;
+    },
+    deleteMonitor: async (parent, { id }, { models }) => {
+      const monitor = await models.Monitor.findOne({ _id: id });
+
+      if (!monitor) {
+        throw Error(`Monitor with id ${id} does not exist`);
+      }
+
+      monitor.deleteOne();
+
+      return true
     }
   },
   Subscription: {
