@@ -1,16 +1,38 @@
 import React from 'react';
-import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split, getMainDefinition } from '@apollo/client';
 import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { Icon, colors } from 'react-native-elements';
 import { Listings } from './components/listings';
 import { Monitors } from './components/monitors';
+import { WebSocketLink } from 'apollo-link-ws';
+
+const httpLink = new HttpLink({
+  uri: 'http://192.168.1.199:5000',
+});
+
+const wsLink = new WebSocketLink({
+  uri: 'ws://192.168.1.199:5000',
+  options: {
+    reconnect: true,
+    reconnectionAttempts: 5
+  }
+});
+
+const link = split(({ query }) => {
+  const definition = getMainDefinition(query);
+  return (
+    definition.kind === 'OperationDefinition' &&
+    definition.operation === 'subscription'
+  );
+},
+  wsLink,
+  httpLink,
+);
 
 const apollo = new ApolloClient({
   cache: new InMemoryCache(),
-  link: new HttpLink({
-    uri: 'http://localhost:5000',
-  })
+  link: link
 });
 
 const iconMap = {

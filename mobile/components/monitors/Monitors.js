@@ -8,9 +8,14 @@ export default function Monitors(props) {
   return (
     <View>
       <Header
+        placement='left'
         centerComponent={{
-          text: routeName,
+          text: routeName.toUpperCase(),
           style: { color: '#fff' }
+        }}
+        rightComponent={{
+          icon: 'add',
+          color: '#fff'
         }}
       />
     </View>
