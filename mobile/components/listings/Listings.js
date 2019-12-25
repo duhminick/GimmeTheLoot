@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, FlatList } from 'react-native';
 import { Header, ListItem } from 'react-native-elements';
 import { gql, useQuery } from '@apollo/client';
 
@@ -79,17 +79,23 @@ class List extends React.Component {
     this.props.subscribeToNewItems();
   }
 
+  _renderItem({ item }) {
+    return <ListItem
+      key={item.id}
+      title={item.name}
+      subtitle={`${item.source} - ${new Date(item.date).toLocaleString()}`}
+      badge={{
+        value: item.price ? `$${item.price}` : '', containerStyle: { opacity: item.price ? 100 : 0, marginLeft: item.price ? 0 : -10 }
+      }}
+      bottomDivider
+    />;
+  }
+
   render() {
-    return this.props.data.items.map(item => (
-      <ListItem
-        key={item.id}
-        title={item.name}
-        subtitle={`${item.source} - ${new Date(item.date).toLocaleString()}`}
-        badge={{
-          value: item.price ? `$${item.price}` : '', containerStyle: { opacity: item.price ? 100 : 0, marginLeft: item.price ? 0 : -10 }
-        }}
-        bottomDivider
-      />
-    ));
+    return <FlatList
+      data={this.props.data.items}
+      renderItem={this._renderItem}
+      keyExtractor={item => item.id.toString()}
+    />;
   }
 }
