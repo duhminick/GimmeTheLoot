@@ -76,6 +76,10 @@ export default {
       monitor.deleteOne();
 
       return true
+    },
+    deleteAll: async (parent, args, { models }) => {
+      await models.Item.deleteMany({});
+      return true;
     }
   },
   Subscription: {
