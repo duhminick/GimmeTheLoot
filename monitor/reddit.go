@@ -34,7 +34,7 @@ func (f reddit) GetItems(monitor Monitor) []Item {
 		if len(monitor.Keywords) == 0 || monitor.KeywordInWord(post.Title) {
 			items = append(items, Item{
 				Name:   post.Title,
-				URL:    post.Permalink,
+				URL:    "https://reddit.com" + post.Permalink,
 				Source: "reddit",
 			})
 		}

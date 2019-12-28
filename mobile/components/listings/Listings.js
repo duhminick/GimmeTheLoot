@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { Header, ListItem } from 'react-native-elements';
 import { gql, useQuery } from '@apollo/client';
+import * as WebBrowser from 'expo-web-browser';
 
 export default function Listings(props) {
   const { routeName } = props.navigation.state;
@@ -87,6 +88,9 @@ class List extends React.Component {
       subtitle={`${item.source} - ${new Date(item.date).toLocaleString()}`}
       badge={{
         value: item.price ? `$${item.price}` : '', containerStyle: { opacity: item.price ? 100 : 0, marginLeft: item.price ? 0 : -10 }
+      }}
+      onPress={async () => {
+        await WebBrowser.openBrowserAsync(item.url);
       }}
       bottomDivider
     />;
