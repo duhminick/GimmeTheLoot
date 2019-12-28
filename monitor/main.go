@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"strings"
 
 	"github.com/machinebox/graphql"
@@ -11,6 +12,9 @@ import (
 const (
 	// GraphQLEndpoint is the URL to the GraphQL endpoint
 	GraphQLEndpoint = "http://localhost:5000"
+
+	// Token is the access key
+	Token = "aiwhaIO%HOIAGH"
 
 	// RetrieveMonitors is the query to retrieve the monitors
 	RetrieveMonitors = `
@@ -57,6 +61,18 @@ type Item struct {
 	Source string
 }
 
+// HTTPRoundTripper represents the ability to execute an HTTP transaction
+type HTTPRoundTripper struct {
+	r http.RoundTripper
+}
+
+// RoundTrip is the function that is used to implement RoundTripper
+// alongside the addition of our Authorization header
+func (rt HTTPRoundTripper) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Add("Authorization", "Bearer "+Token)
+	return rt.r.RoundTrip(r)
+}
+
 // KeywordInWord checks to see if the inputted word has a keyword from the keywords array
 func (m *Monitor) KeywordInWord(word string) bool {
 	for _, keyword := range m.Keywords {
@@ -68,11 +84,17 @@ func (m *Monitor) KeywordInWord(word string) bool {
 	return false
 }
 
+var httpClient *http.Client
 var client *graphql.Client
 var fetchers []Fetcher
 
 func init() {
-	client = graphql.NewClient(GraphQLEndpoint)
+	httpClient = &http.Client{
+		Transport: HTTPRoundTripper{
+			r: http.DefaultTransport,
+		},
+	}
+	client = graphql.NewClient(GraphQLEndpoint, graphql.WithHTTPClient(httpClient))
 	fetchers = []Fetcher{
 		&eBay{},
 		&reddit{},
