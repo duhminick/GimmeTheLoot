@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, FlatList } from 'react-native';
 import { Header, ListItem } from 'react-native-elements';
 import { gql, useQuery } from '@apollo/client';
@@ -6,17 +6,17 @@ import { gql, useQuery } from '@apollo/client';
 export default function Listings(props) {
   const { routeName } = props.navigation.state;
 
+  const ListHeader = <Header
+    placement='left'
+    centerComponent={{
+      text: routeName.toUpperCase(),
+      style: { color: '#fff' }
+    }}
+  />
+
   return (
     <View>
-      <Header
-        placement='left'
-        centerComponent={{
-          text: routeName.toUpperCase(),
-          style: { color: '#fff' }
-        }}
-      />
-
-      <UpdatingList />
+      <UpdatingList ListHeaderComponent={ListHeader} />
     </View>
   );
 }
@@ -47,7 +47,7 @@ subscription {
 }
 `;
 
-function UpdatingList() {
+function UpdatingList(props) {
   const { loading, error, subscribeToMore, ...result } = useQuery(GET_ITEMS);
 
   if (loading) return <Text>Loading...</Text>
@@ -56,6 +56,7 @@ function UpdatingList() {
   return (
     <List
       {...result}
+      ListHeaderComponent={props.ListHeaderComponent}
       subscribeToNewItems={() => {
         subscribeToMore({
           document: SUBSCRIBE_ITEMS_ADDED,
@@ -93,6 +94,7 @@ class List extends React.Component {
 
   render() {
     return <FlatList
+      ListHeaderComponent={this.props.ListHeaderComponent}
       data={this.props.data.items}
       renderItem={this._renderItem}
       keyExtractor={item => item.id.toString()}
