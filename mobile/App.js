@@ -1,25 +1,27 @@
 import React from 'react';
 import { ApolloClient, ApolloProvider, HttpLink, InMemoryCache, split, getMainDefinition } from '@apollo/client';
+import { setContext } from 'apollo-link-context';
 import { createAppContainer } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 import { Icon, colors } from 'react-native-elements';
 import { Listings } from './components/listings';
 import { Monitors } from './components/monitors';
 import { WebSocketLink } from 'apollo-link-ws';
+import { API, API_PORT, TOKEN } from './config';
 
 const httpLink = new HttpLink({
-  uri: 'http://192.168.1.199:5000',
+  uri: `http://${API}:${API_PORT}`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: 'ws://192.168.1.199:5000',
+  uri: `ws://${API}:${API_PORT}`,
   options: {
     reconnect: true,
     reconnectionAttempts: 5
   }
 });
 
-const link = split(({ query }) => {
+var link = split(({ query }) => {
   const definition = getMainDefinition(query);
   return (
     definition.kind === 'OperationDefinition' &&
@@ -29,6 +31,19 @@ const link = split(({ query }) => {
   wsLink,
   httpLink,
 );
+
+const authLink = setContext((_, { headers }) => {
+  return {
+    headers: {
+      ...headers,
+      authorization: TOKEN ? `Bearer ${TOKEN}` : "",
+    }
+  }
+});
+
+if (TOKEN) {
+  link = authLink.concat(link);
+}
 
 const apollo = new ApolloClient({
   cache: new InMemoryCache(),

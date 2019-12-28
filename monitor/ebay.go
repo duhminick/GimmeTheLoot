@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"strconv"
 	"strings"
 
@@ -51,7 +50,6 @@ func (f eBay) GetItems(monitor Monitor) []Item {
 		name := e.ChildText(".s-item__title")
 
 		if len(monitor.Keywords) == 0 || monitor.KeywordInWord(name) {
-			log.Println("WAD")
 			items = append(items, Item{
 				Name:   name,
 				URL:    CleanURL(e.ChildAttr("a.s-item__link", "href")),
