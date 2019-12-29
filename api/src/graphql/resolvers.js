@@ -24,7 +24,7 @@ export default {
     monitor: async (parent, { id }, { models }) => {
       const monitor = await models.Monitor.findOne({ _id: id });
 
-      if (!item) {
+      if (!monitor) {
         throw Error(`Monitor with id ${id} does not exist`);
       }
 
