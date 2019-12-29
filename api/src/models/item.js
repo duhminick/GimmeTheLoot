@@ -8,5 +8,6 @@ export default mongoose.model('Item', new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
-  }
+  },
+  archived: Boolean
 }));

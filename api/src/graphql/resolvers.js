@@ -20,7 +20,16 @@ export default {
     monitors: async (parent, args, { models }) => {
       const monitors = await models.Monitor.find({});
       return monitors;
-    }
+    },
+    monitor: async (parent, { id }, { models }) => {
+      const monitor = await models.Monitor.findOne({ _id: id });
+
+      if (!item) {
+        throw Error(`Monitor with id ${id} does not exist`);
+      }
+
+      return monitor;
+    },
   },
   Mutation: {
     createItem: async (parent, { name, url, price, source }, { models, pubsub }) => {
@@ -34,7 +43,8 @@ export default {
         name,
         url,
         price,
-        source
+        source,
+        archived: false
       });
 
       await newItem.save();
@@ -52,6 +62,29 @@ export default {
 
       item.deleteOne();
 
+      return true;
+    },
+    archiveItem: async (parent, { id }, { models }) => {
+      const item = await models.Item.findOne({ _id: id });
+
+      if (!item) {
+        throw Error(`Item with id ${id} does not exist`);
+      }
+
+      await models.Item.updateOne({ _id: id }, {
+        archived: true
+      });
+
+      return true;
+    },
+    deleteAllItems: async (parent, args, { models }) => {
+      await models.Item.deleteMany({});
+      return true;
+    },
+    archiveAllItems: async (parent, args, { models }) => {
+      await models.Item.updateMany({}, {
+        archived: true
+      });
       return true;
     },
     createMonitor: async (parent, { name, type, keywords, url }, { models }) => {
@@ -77,10 +110,6 @@ export default {
 
       return true
     },
-    deleteAll: async (parent, args, { models }) => {
-      await models.Item.deleteMany({});
-      return true;
-    }
   },
   Subscription: {
     itemAdded: {

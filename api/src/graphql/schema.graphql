@@ -5,16 +5,19 @@ type Query {
   item(id: ID!): Item!
 
   monitors: [Monitor!]!
+  monitor(id: ID!): Monitor!
 }
 
 type Mutation {
   createItem(name: String!, url: String!, price: Float, source: String): Boolean!
   deleteItem(id: ID!): Boolean!
+  archiveItem(id: ID!): Boolean!
+
+  deleteAllItems: Boolean!
+  archiveAllItems: Boolean!
   
   createMonitor(name: String!, type: String!, keywords: [String]!, url: String): Boolean!
   deleteMonitor(id: ID!): Boolean!
-
-  deleteAll: Boolean!
 }
 
 type Subscription {
@@ -28,6 +31,7 @@ type Item {
   price: Float
   source: String
   date: Date!
+  archived: Boolean!
 }
 
 type Monitor {
