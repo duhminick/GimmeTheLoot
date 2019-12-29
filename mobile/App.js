@@ -7,14 +7,14 @@ import { Icon, colors } from 'react-native-elements';
 import { Listings } from './components/listings';
 import { Monitors } from './components/monitors';
 import { WebSocketLink } from 'apollo-link-ws';
-import { API, API_PORT, TOKEN } from './config';
+import { API_HTTP, API_WS, API_PORT, TOKEN } from './config';
 
 const httpLink = new HttpLink({
-  uri: `http://${API}:${API_PORT}`,
+  uri: `${API_HTTP}:${API_PORT}`,
 });
 
 const wsLink = new WebSocketLink({
-  uri: `ws://${API}:${API_PORT}`,
+  uri: `${API_WS}:${API_PORT}`,
   options: {
     reconnect: true,
     reconnectionAttempts: 5
