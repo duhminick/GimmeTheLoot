@@ -1,7 +1,7 @@
 scalar Date
 
 type Query {
-  items: [Item!]!
+  items(archived: Boolean!): [Item!]!
   item(id: ID!): Item!
 
   monitors: [Monitor!]!

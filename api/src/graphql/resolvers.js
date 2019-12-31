@@ -4,8 +4,8 @@ const ITEM_ADDED = 'itemAdded';
 
 export default {
   Query: {
-    items: async (parent, args, { models }) => {
-      const items = await models.Item.find({}).sort('-date');
+    items: async (parent, { archived }, { models }) => {
+      const items = await models.Item.find({ archived }).sort('-date');
       return items;
     },
     item: async (parent, { id }, { models }) => {
