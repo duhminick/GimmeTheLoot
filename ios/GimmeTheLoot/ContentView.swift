@@ -22,7 +22,7 @@ struct ContentView: View {
                 Text("Monitors")
             }
         }.font(.headline)
-            .edgesIgnoringSafeArea(.top)
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
