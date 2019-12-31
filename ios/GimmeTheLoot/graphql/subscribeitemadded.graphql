@@ -1,0 +1,11 @@
+subscription ItemAdded {
+  itemAdded {
+    id
+    name
+    url
+    price
+    date
+    source
+    archived
+  }
+}

@@ -1,0 +1,8 @@
+mutation CreateMonitor($name: String!, $type: String!, $keywords: [String]!, $url: String!) {
+  createMonitor(
+    name: $name
+    type: $type
+    keywords: $keywords
+    url: $url
+  )
+}

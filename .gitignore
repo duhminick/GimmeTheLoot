@@ -1,2 +1,4 @@
 .env
 docker-compose.prod.yml
+.DS_Store
+Info.plist

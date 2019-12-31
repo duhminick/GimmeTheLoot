@@ -1,0 +1,5 @@
+mutation ArchiveItem($id: ID!) {
+  archiveItem(
+    id: $id
+  )
+}

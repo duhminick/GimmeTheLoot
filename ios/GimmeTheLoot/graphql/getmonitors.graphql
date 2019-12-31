@@ -1,0 +1,9 @@
+query GetMonitors {
+  monitors {
+    id
+    name
+    type
+    keywords
+    url
+  }
+}

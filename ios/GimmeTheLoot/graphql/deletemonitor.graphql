@@ -1,0 +1,5 @@
+mutation DeleteMonitor($id: ID!) {
+  deleteMonitor(
+    id: $id
+  )
+}

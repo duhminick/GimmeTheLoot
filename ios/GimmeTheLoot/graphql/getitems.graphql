@@ -1,0 +1,11 @@
+query GetItems($archived: Boolean!) {
+  items(archived: $archived) {
+    id
+    name
+    url
+    price
+    date
+    source
+    archived
+  }
+}
