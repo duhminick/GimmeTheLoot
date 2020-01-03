@@ -11,15 +11,10 @@ import SwiftUI
 struct MonitorDetail: View {
     @State var monitor: Monitor?
     
-    /// New Monitor and Update Monitor
-    /// Add and Update
-    @State private var barTitle: String = "New Monitor"
-    @State private var barItemText: String = "Add"
-    
     @State private var name: String = ""
     @State private var url: String = ""
     @State private var type: Int = 0
-    @State private var keywords: String = ""
+    @State private var keywords: [String] = []
     
     var types: [String] = ["ebay", "reddit"]
     
@@ -30,7 +25,7 @@ struct MonitorDetail: View {
             }
             
             Section(header: Text("Source Origin")) {
-                TextField("URL", text: $url)
+                TextField("URL", text: $url).disableAutocorrection(true).autocapitalization(.none)
             }
             
             Section(header: Text("Source Type")) {
@@ -42,9 +37,31 @@ struct MonitorDetail: View {
             }
             
             Section(header: Text("Keywords")) {
-                TextField("Keywords", text: $keywords)
+                VStack(spacing: 15) {
+                    ForEach(keywords.indices, id: \.self) { index in
+                        HStack {
+//                            Button(action: { }) {
+//                                Image(systemName: "minus.circle.fill")
+//                                    .foregroundColor(Color.red)
+//                            }.onTapGesture {
+//                                print("Removing \(self.keywords[index]) at index \(index)")
+//                                self.keywords.remove(at: index)
+//                            }
+                            TextField("Keyword #\(index + 1)", text: self.$keywords[index])
+                        }
+                    }
+                }
+                Button(action: {
+                    self.keywords.append("")
+                }) {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(Color.green)
+                        Text("Add New Keyword")
+                    }
+                }
             }
-        }.navigationBarTitle(self.barTitle)
+        }.navigationBarTitle(monitor != nil ? "Update Monitor" : "New Monitor")
         .navigationBarItems(trailing: Button(action: {
             if let _ = self.monitor {
                 self.update()
@@ -52,22 +69,36 @@ struct MonitorDetail: View {
                 self.create()
             }
         }) {
-            Text(self.barItemText)
+            if monitor != nil {
+                Text("Update")
+            } else {
+                Text("Add")
+            }
         }).onAppear {
             // Monitor was passed in, so we are updating rather than creating
             if let monitor = self.monitor {
-                self.barTitle = "Update Monitor"
-                self.barItemText = "Update"
                 self.name = monitor.name
                 self.url = monitor.url
                 self.type = self.types.firstIndex(of: monitor.type) ?? 0
-                self.keywords = self.stringFromKeywordArray(input: monitor.keywords)
+                self.keywords = monitor.keywords
             }
         }
     }
     
     func update() {
-        ApolloNetwork.shared.apollo.perform(mutation: CreateMonitorMutation(name: name, type: self.types[self.type], keywords: self.keywordArrayFromString(input: keywords), url: url)) { result in
+//        ApolloNetwork.shared.apollo.perform(mutation: CreateMonitorMutation(name: name, type: self.types[self.type], keywords: self.arrayWithoutEmptyStrings(input: keywords), url: url)) { result in
+//            switch result {
+//            case .success(let graphQLResult):
+//                print(graphQLResult)
+//            case .failure(let error):
+//                print(error)
+//            }
+//        }
+        print(arrayWithoutEmptyStrings(input: self.keywords))
+    }
+    
+    func create() {
+        ApolloNetwork.shared.apollo.perform(mutation: CreateMonitorMutation(name: name, type: self.types[self.type], keywords: arrayWithoutEmptyStrings(input: keywords), url: url)) { result in
             switch result {
             case .success(let graphQLResult):
                 print(graphQLResult)
@@ -77,14 +108,9 @@ struct MonitorDetail: View {
         }
     }
     
-    func create() {
-        ApolloNetwork.shared.apollo.perform(mutation: CreateMonitorMutation(name: name, type: self.types[self.type], keywords: self.keywordArrayFromString(input: keywords), url: url)) { result in
-            switch result {
-            case .success(let graphQLResult):
-                print(graphQLResult)
-            case .failure(let error):
-                print(error)
-            }
+    func deleteKeyword(at offsets: IndexSet) {
+        for offset in offsets.reversed() {
+            self.keywords.remove(at: offset)
         }
     }
     
@@ -103,10 +129,22 @@ struct MonitorDetail: View {
         
         return buffer
     }
+    
+    func arrayWithoutEmptyStrings(input: [String]) -> [String] {
+        var result: [String] = []
+        
+        for string in input {
+            if string != "" {
+                result.append(string)
+            }
+        }
+        
+        return result
+    }
 }
 
 struct MonitorDetail_Previews: PreviewProvider {
     static var previews: some View {
-        MonitorDetail(monitor: nil)
+        MonitorDetail(monitor: Monitor(id: "1", name: "Testing", type: "ebay", keywords: ["Test", "ABC"], url: "https://test.com"))
     }
 }

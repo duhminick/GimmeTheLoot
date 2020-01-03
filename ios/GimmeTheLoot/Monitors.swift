@@ -49,7 +49,7 @@ struct Monitors: View {
             self.monitors.removeAll()
 
             // TODO: do not cache this result
-            ApolloNetwork.shared.apollo.fetch(query: GetMonitorsQuery()) { result in
+            ApolloNetwork.shared.apollo.fetch(query: GetMonitorsQuery(), cachePolicy: .fetchIgnoringCacheCompletely) { result in
                 switch result {
                 case .success(let graphQLResult):
                     if let result = graphQLResult.data?.monitors {

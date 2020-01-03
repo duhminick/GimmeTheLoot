@@ -58,7 +58,7 @@ struct Listings: View {
         }.onAppear(perform: {
             // Initial fetch of items from API
             if !self.initialFetchComplete {
-                ApolloNetwork.shared.apollo.fetch(query: GetItemsQuery(archived: false)) { result in
+                ApolloNetwork.shared.apollo.fetch(query: GetItemsQuery(archived: false), cachePolicy: .fetchIgnoringCacheCompletely) { result in
                     switch result {
                     case .success(let graphQLResult):
                         if let items = graphQLResult.data?.items {
