@@ -17,6 +17,7 @@ type Mutation {
   archiveAllItems: Boolean!
   
   createMonitor(name: String!, type: String!, keywords: [String]!, url: String): Boolean!
+  updateMonitor(id: ID!, name: String!, type: String!, keywords: [String]!, url: String!): Boolean!
   deleteMonitor(id: ID!): Boolean!
 }
 

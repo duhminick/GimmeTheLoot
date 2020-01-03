@@ -99,6 +99,21 @@ export default {
 
       return true;
     },
+    updateMonitor: async (parent, args, { models }) => {
+      const { id } = args;
+
+      const monitor = await models.Monitor.findOne({ _id: id });
+
+      if (!monitor) {
+        throw Error(`Monitor with id ${id} does not exist`);
+      }
+
+      await models.Monitor.updateOne({ _id: id }, {
+        ...args
+      });
+
+      return true;
+    },
     deleteMonitor: async (parent, { id }, { models }) => {
       const monitor = await models.Monitor.findOne({ _id: id });
 
