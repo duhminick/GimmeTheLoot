@@ -25,7 +25,7 @@ struct MonitorDetail: View {
             }
             
             Section(header: Text("Source Origin")) {
-                TextField("URL", text: $url).disableAutocorrection(true).autocapitalization(.none)
+                TextField("URL", text: $url).disableAutocorrection(true).autocapitalization(.none).keyboardType(.webSearch)
             }
             
             Section(header: Text("Source Type")) {
@@ -86,15 +86,15 @@ struct MonitorDetail: View {
     }
     
     func update() {
-//        ApolloNetwork.shared.apollo.perform(mutation: CreateMonitorMutation(name: name, type: self.types[self.type], keywords: self.arrayWithoutEmptyStrings(input: keywords), url: url)) { result in
-//            switch result {
-//            case .success(let graphQLResult):
-//                print(graphQLResult)
-//            case .failure(let error):
-//                print(error)
-//            }
-//        }
-        print(arrayWithoutEmptyStrings(input: self.keywords))
+        ApolloNetwork.shared.apollo.perform(mutation: UpdateMonitorMutation(id: monitor!.id, name: name, type: self.types[self.type], keywords: self.arrayWithoutEmptyStrings(input: keywords), url: url)) { result in
+            switch result {
+            case .success(let graphQLResult):
+                print(graphQLResult)
+            case .failure(let error):
+                print(error)
+            }
+        }
+//        print(arrayWithoutEmptyStrings(input: self.keywords))
     }
     
     func create() {

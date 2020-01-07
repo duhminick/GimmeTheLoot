@@ -1,0 +1,9 @@
+mutation UpdateMonitor($id: ID!, $name: String!, $type: String!, $keywords: [String]!, $url: String!) {
+  updateMonitor(
+    id: $id
+    name: $name
+    type: $type
+    keywords: $keywords
+    url: $url
+  )
+}

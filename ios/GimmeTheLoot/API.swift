@@ -626,3 +626,60 @@ public final class ItemAddedSubscription: GraphQLSubscription {
     }
   }
 }
+
+public final class UpdateMonitorMutation: GraphQLMutation {
+  /// The raw GraphQL definition of this operation.
+  public let operationDefinition =
+    """
+    mutation UpdateMonitor($id: ID!, $name: String!, $type: String!, $keywords: [String]!, $url: String!) {
+      updateMonitor(id: $id, name: $name, type: $type, keywords: $keywords, url: $url)
+    }
+    """
+
+  public let operationName = "UpdateMonitor"
+
+  public var id: GraphQLID
+  public var name: String
+  public var type: String
+  public var keywords: [String?]
+  public var url: String
+
+  public init(id: GraphQLID, name: String, type: String, keywords: [String?], url: String) {
+    self.id = id
+    self.name = name
+    self.type = type
+    self.keywords = keywords
+    self.url = url
+  }
+
+  public var variables: GraphQLMap? {
+    return ["id": id, "name": name, "type": type, "keywords": keywords, "url": url]
+  }
+
+  public struct Data: GraphQLSelectionSet {
+    public static let possibleTypes = ["Mutation"]
+
+    public static let selections: [GraphQLSelection] = [
+      GraphQLField("updateMonitor", arguments: ["id": GraphQLVariable("id"), "name": GraphQLVariable("name"), "type": GraphQLVariable("type"), "keywords": GraphQLVariable("keywords"), "url": GraphQLVariable("url")], type: .nonNull(.scalar(Bool.self))),
+    ]
+
+    public private(set) var resultMap: ResultMap
+
+    public init(unsafeResultMap: ResultMap) {
+      self.resultMap = unsafeResultMap
+    }
+
+    public init(updateMonitor: Bool) {
+      self.init(unsafeResultMap: ["__typename": "Mutation", "updateMonitor": updateMonitor])
+    }
+
+    public var updateMonitor: Bool {
+      get {
+        return resultMap["updateMonitor"]! as! Bool
+      }
+      set {
+        resultMap.updateValue(newValue, forKey: "updateMonitor")
+      }
+    }
+  }
+}
