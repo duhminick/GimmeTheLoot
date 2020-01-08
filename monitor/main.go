@@ -98,6 +98,7 @@ func init() {
 	fetchers = []Fetcher{
 		&eBay{},
 		&reddit{},
+		&Amazon{},
 	}
 }
 
