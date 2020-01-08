@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/gocolly/colly"
@@ -21,21 +20,6 @@ func CleanURL(url string) string {
 	}
 
 	return url
-}
-
-// CleanPrice takes in a price and removes any unnecessary parts and returns a float
-func CleanPrice(price string) float32 {
-	if strings.Contains(price, "to") {
-		price = strings.Split(price, " to ")[0]
-	}
-
-	if strings.Contains(price, "$") {
-		price = strings.Split(price, "$")[1]
-	}
-
-	numerical, _ := strconv.ParseFloat(price, 32)
-
-	return float32(numerical)
 }
 
 func (f eBay) ShouldFetch(monitor Monitor) bool {
