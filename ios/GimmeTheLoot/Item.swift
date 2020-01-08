@@ -24,4 +24,19 @@ struct Item: Identifiable, Hashable {
         
         return String(format: "$%.02f", price)
     }
+    
+    var formattedDate: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        let opDate = dateFormatter.date(from: self.date)
+        
+        guard let date = opDate else {
+            return self.date
+        }
+        
+        let dateFormatterToString = DateFormatter()
+        dateFormatterToString.dateFormat = "MM/dd/yyyy @ hh:mm a"
+        return dateFormatterToString.string(from: date)
+    }
 }

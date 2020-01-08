@@ -21,7 +21,7 @@ struct ItemRow: View {
                         .font(.subheadline)
                     Text("-")
                         .font(.subheadline)
-                    Text(item.date.description)
+                    Text(item.formattedDate)
                         .font(.subheadline)
                 }
             }

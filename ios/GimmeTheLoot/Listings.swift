@@ -7,10 +7,10 @@
 //
 
 import SwiftUI
+import Apollo
 
 struct Listings: View {
     @State var items: [Item]
-    @State var initialFetchComplete: Bool = false
     
     // For WebView modal
     @State private var showModal: Bool = false
@@ -18,6 +18,8 @@ struct Listings: View {
     
     // For ActionSheet
     @State private var showActionSheet: Bool = false
+    
+    @State private var subscription: Cancellable? = nil
     
     var body: some View {
         NavigationView {
@@ -57,26 +59,29 @@ struct Listings: View {
             })
         }.onAppear(perform: {
             // Initial fetch of items from API
-            if !self.initialFetchComplete {
-                ApolloNetwork.shared.apollo.fetch(query: GetItemsQuery(archived: false), cachePolicy: .fetchIgnoringCacheCompletely) { result in
-                    switch result {
-                    case .success(let graphQLResult):
-                        if let items = graphQLResult.data?.items {
-                            for item in items {
-                                // Append results to the items state array
-                                self.items.append(Item(id: item.id, name: item.name, url: item.url, price: item.price, source: item.source ?? "NA", date: item.date, archived: item.archived))
-                            }
+            self.items.removeAll()
+            
+            ApolloNetwork.shared.apollo.fetch(query: GetItemsQuery(archived: false), cachePolicy: .fetchIgnoringCacheCompletely) { result in
+                switch result {
+                case .success(let graphQLResult):
+                    if let items = graphQLResult.data?.items {
+                        for item in items {
+                            // Append results to the items state array
+                            self.items.append(Item(id: item.id, name: item.name, url: item.url, price: item.price, source: item.source ?? "NA", date: item.date, archived: item.archived))
                         }
-                    case .failure(let error):
-                        print(error)
                     }
+                case .failure(let error):
+                    print(error)
                 }
-                
-                self.initialFetchComplete = true
+            }
+            
+            // Cancel our previous subscription - to prevent duplicate additions
+            if self.subscription != nil {
+                self.subscription?.cancel()
             }
             
             // Subscribe to API for new items
-            ApolloNetwork.shared.apollo.subscribe(subscription: ItemAddedSubscription()) { result in
+            self.subscription = ApolloNetwork.shared.apollo.subscribe(subscription: ItemAddedSubscription()) { result in
                 switch result {
                 case .success(let graphQLResult):
                     if let item = graphQLResult.data?.itemAdded {

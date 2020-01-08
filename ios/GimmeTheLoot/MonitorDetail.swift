@@ -16,6 +16,8 @@ struct MonitorDetail: View {
     @State private var type: Int = 0
     @State private var keywords: [String] = []
     
+    @Environment(\.presentationMode) private var presentation
+    
     var types: [String] = ["ebay", "reddit"]
     
     var body: some View {
@@ -68,6 +70,8 @@ struct MonitorDetail: View {
             } else {
                 self.create()
             }
+            
+            self.presentation.wrappedValue.dismiss()
         }) {
             if monitor != nil {
                 Text("Update")
