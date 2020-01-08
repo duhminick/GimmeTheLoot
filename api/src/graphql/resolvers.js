@@ -54,6 +54,7 @@ export default {
       if (process.env.ENABLE_APN) {
         const devices = await models.Device.find({});
         for (const device of devices) {
+          // TODO: fix price - it can come out as $undefined
           device.sendAPN(name, `$${price}`);
         }
       }
