@@ -51,6 +51,13 @@ export default {
 
       pubsub.publish(ITEM_ADDED, { itemAdded: newItem });
 
+      if (process.env.ENABLE_APN) {
+        const devices = await models.Device.find({});
+        for (const device of devices) {
+          device.sendAPN(name, `$${price}`);
+        }
+      }
+
       return true;
     },
     deleteItem: async (parent, { id }, { models }) => {
@@ -125,6 +132,26 @@ export default {
 
       return true
     },
+    createDevice: async (parent, { token }, { models }) => {
+      const newDevice = models.Device({
+        token
+      });
+
+      await newDevice.save();
+
+      return true;
+    },
+    deleteDevice: async (parent, { id }, { models }) => {
+      const device = await models.Device.findOne({ _id: id });
+
+      if (!device) {
+        throw Error(`Device with id ${id} does not exist`);
+      }
+
+      device.deleteOne();
+
+      return true
+    }
   },
   Subscription: {
     itemAdded: {
