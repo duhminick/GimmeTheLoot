@@ -34,28 +34,52 @@ export default {
   Mutation: {
     createItem: async (parent, { name, url, price, source }, { models, pubsub }) => {
       const item = await models.Item.findOne({ url });
+      let itemOfInterest = null;
 
-      if (item) {
+      if (item && price && item.price && price >= item.price) {
+        // Not cheaper and it already exists
+        throw Error(`Item with url ${url} is not cheaper than it has been previously`)
+      } else if (item && price && item.price && price < item.price) {
+        // Update if cheaper
+
+        await models.Item.updateOne({ url }, {
+          price,
+          archived: false,
+          date: Date.now()
+        });
+
+        itemOfInterest = models.Item.findOne({ url });
+      } else if (item) {
+        // No price and it already exists
+
         throw Error(`Item with url ${url} already exists`);
+      } else {
+        // New - so it does not exist
+
+        const newItem = models.Item({
+          name,
+          url,
+          price,
+          source,
+          archived: false
+        });
+
+        await newItem.save();
+
+        itemOfInterest = newItem;
       }
 
-      const newItem = models.Item({
-        name,
-        url,
-        price,
-        source,
-        archived: false
-      });
-
-      await newItem.save();
-
-      pubsub.publish(ITEM_ADDED, { itemAdded: newItem });
+      pubsub.publish(ITEM_ADDED, { itemAdded: itemOfInterest });
 
       if (process.env.ENABLE_APN) {
         const devices = await models.Device.find({});
         for (const device of devices) {
-          // TODO: fix price - it can come out as $undefined
-          device.sendAPN(name, `$${price}`);
+          let body = `${source}`;
+          if (price) {
+            body = `$${price} - ${source}`;
+          }
+
+          device.sendAPN(name, body);
         }
       }
 
