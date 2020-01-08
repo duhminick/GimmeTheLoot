@@ -13,12 +13,12 @@ struct ContentView: View {
     var body : some View {
         TabView {
             Listings(items: []).tabItem {
-                Image(systemName: "1.square.fill")
+                Image(systemName: "cart.fill")
                 Text("Listings")
             }
             
             Monitors(monitors: []).tabItem {
-                Image(systemName: "2.circle.fill")
+                Image(systemName: "magnifyingglass")
                 Text("Monitors")
             }
         }.font(.headline)
