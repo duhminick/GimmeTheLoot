@@ -16,6 +16,10 @@ struct Monitor: Hashable, Identifiable {
     var url: String
     
     var keywordsDescription: String {
+        if keywords.count == 0 {
+            return ""
+        }
+        
         var buffer: String = ""
         
         for i in 0..<keywords.count - 1 {

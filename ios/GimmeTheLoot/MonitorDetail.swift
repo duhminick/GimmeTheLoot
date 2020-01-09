@@ -18,7 +18,7 @@ struct MonitorDetail: View {
     
     @Environment(\.presentationMode) private var presentation
     
-    var types: [String] = ["ebay", "reddit"]
+    var types: [String] = ["ebay", "reddit", "amazon"]
     
     var body: some View {
         Form {

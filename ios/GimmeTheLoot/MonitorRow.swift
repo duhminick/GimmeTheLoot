@@ -19,10 +19,12 @@ struct MonitorRow: View {
                 HStack {
                     Text(monitor.type)
                         .font(.subheadline)
-                    Text("-")
-                        .font(.subheadline)
-                    Text(monitor.keywordsDescription)
-                        .font(.subheadline)
+                    if monitor.keywords.count > 0 {
+                        Text("-")
+                            .font(.subheadline)
+                        Text(monitor.keywordsDescription)
+                            .font(.subheadline)
+                    }
                 }
             }
         }.padding(5)
