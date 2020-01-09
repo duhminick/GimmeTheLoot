@@ -33,7 +33,10 @@ func (f Amazon) GetItems(monitor Monitor) []Item {
 	}
 
 	// Set User-Agent to the one used for Chrome macOS
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36")
+	req.Header.Set("Accept-Encoding", "deflate")
+	req.Header.Set("Proxy-Connection", "keep-alive")
+	req.Header.Set("Host", "www.amazon.com:443")
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -50,7 +53,7 @@ func (f Amazon) GetItems(monitor Monitor) []Item {
 	output := string(body)
 
 	// Using RegEx to get the info we need
-	re := regexp.MustCompile(`"buyboxPrice":"(\$[^"]+)"`)
+	re := regexp.MustCompile(`data-asin-price="([^"]+)"`)
 	item.Price = CleanPrice(re.FindStringSubmatch(output)[1])
 
 	re = regexp.MustCompile(`"TURBO_CHECKOUT_HEADER":"Buy now: ([^"]+)`)
