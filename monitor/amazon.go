@@ -53,11 +53,16 @@ func (f Amazon) GetItems(monitor Monitor) []Item {
 	output := string(body)
 
 	// Using RegEx to get the info we need
-	re := regexp.MustCompile(`data-asin-price="([^"]+)"`)
-	item.Price = CleanPrice(re.FindStringSubmatch(output)[1])
+	re_price := regexp.MustCompile(`data-asin-price="([^"]+)"`)
+	price_match := re_price.FindStringSubmatch(output)
+	re_name := regexp.MustCompile(`"TURBO_CHECKOUT_HEADER":"Buy now: ([^"]+)`)
+	name_match := re_name.FindStringSubmatch(output)
 
-	re = regexp.MustCompile(`"TURBO_CHECKOUT_HEADER":"Buy now: ([^"]+)`)
-	item.Name = re.FindStringSubmatch(output)[1]
-
-	return append(items, item)
+	if len(price_match) > 0 && len(name_match) > 0 {
+		item.Price = CleanPrice(price_match[1])
+		item.Name = name_match[1]
+		return append(items, item)
+	} else {
+		return items
+	}
 }
