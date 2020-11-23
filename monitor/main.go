@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 
 	"github.com/machinebox/graphql"
 )
@@ -102,6 +103,22 @@ func init() {
 	}
 }
 
+func GetItems(ic chan<- Item, monitor Monitor) {
+	for _, fetcher := range fetchers {
+		// Check to see if the current fetcher should be used on this monitor
+		if fetcher.ShouldFetch(monitor) {
+			log.Printf("Fetching items for '%s' with type '%s'", monitor.Name, monitor.Type)
+
+			// Get all the items from the fetcher
+			items := fetcher.GetItems(monitor)
+
+			for _, item := range items {
+				ic <- item
+			}
+		}
+	}
+}
+
 func main() {
 	ctx := context.Background()
 
@@ -113,29 +130,33 @@ func main() {
 		log.Panic(err)
 	}
 
+	items := make(chan Item)
+	var wg sync.WaitGroup
 	for _, monitor := range response.Monitors {
-		for _, fetcher := range fetchers {
-			// Check to see if the current fetcher should be used on this monitor
-			if fetcher.ShouldFetch(monitor) {
-				log.Printf("Fetching items for '%s' with type '%s'", monitor.Name, monitor.Type)
+		wg.Add(1)
+		go func(monitor Monitor) {
+			GetItems(items, monitor)
+			wg.Done()
+		}(monitor)
+	}
 
-				// Get all the items from the fetcher
-				items := fetcher.GetItems(monitor)
+	go func() {
+		wg.Wait()
+		close(items)
+	}()
 
-				// Iterate through the items
-				for _, item := range items {
-					addReq := graphql.NewRequest(AddItem)
+	// Iterate through the items
+	for item := range items {
+		log.Printf("Looking at item %s", item.Name)
+		addReq := graphql.NewRequest(AddItem)
 
-					addReq.Var("name", item.Name)
-					addReq.Var("url", item.URL)
-					addReq.Var("price", item.Price)
-					addReq.Var("source", item.Source)
+		addReq.Var("name", item.Name)
+		addReq.Var("url", item.URL)
+		addReq.Var("price", item.Price)
+		addReq.Var("source", item.Source)
 
-					if err := client.Run(ctx, addReq, nil); err == nil {
-						log.Printf("Added item '%s'", item.Name)
-					}
-				}
-			}
+		if err := client.Run(ctx, addReq, nil); err == nil {
+			log.Printf("Added item '%s'", item.Name)
 		}
 	}
 }
